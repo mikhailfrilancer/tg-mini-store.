@@ -22,23 +22,35 @@ export default function App() {
   const [editingProduct, setEditingProduct] = useState(null)
 
   useEffect(() => {
-    // 1. Инициализируем Telegram WebApp
-    const tg = window.Telegram?.WebApp
-    if (tg) {
-      tg.ready()
-      tg.expand()
+    const initTG = () => {
+      const tg = window.Telegram?.WebApp
+      if (tg) {
+        tg.ready()
+        tg.expand()
+      }
+      checkAdminAccess()
     }
 
-    // 2. Проверяем права админа и загружаем товары
-    checkAdminAccess()
+    // Первая проверка
+    initTG()
+
+    // Запасные проверки с задержкой (для iOS/медленной загрузки Telegram SDK)
+    const timer1 = setTimeout(checkAdminAccess, 300)
+    const timer2 = setTimeout(checkAdminAccess, 1000)
+
     fetchProducts()
+
+    return () => {
+      clearTimeout(timer1)
+      clearTimeout(timer2)
+    }
   }, [])
 
   const checkAdminAccess = () => {
     const tg = window.Telegram?.WebApp
     const user = tg?.initDataUnsafe?.user
 
-    // Фиксируем информацию для визуального дебага прямо в интерфейсе
+    // Фиксируем информацию для визуального дебага
     if (user) {
       setDebugInfo(`Юзер: @${user.username || 'БЕЗ_ЮЗЕРНЕЙМА'} (ID: ${user.id})`)
     } else {
@@ -107,7 +119,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#1F262E] text-slate-100 pb-10">
-      {/* ВРЕМЕННАЯ ПЛАШКА ОТЛАДКИ ДЛЯ ПРОВЕРКИ DЕBUGA */}
+      {/* ВРЕМЕННАЯ ПЛАШКА ОТЛАДКИ */}
       <div className="bg-amber-500/20 border-b border-amber-500/40 text-amber-200 text-xs px-4 py-2 text-center font-mono">
         {debugInfo} | <span className="font-bold">Admin: {isAdmin ? 'ДА' : 'НЕТ'}</span>
       </div>
