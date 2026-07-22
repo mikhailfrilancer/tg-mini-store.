@@ -14,7 +14,6 @@ export default function App() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
-  const [debugInfo, setDebugInfo] = useState('Загрузка...')
 
   // Модальные окна
   const [isAdminOpen, setIsAdminOpen] = useState(false)
@@ -31,33 +30,14 @@ export default function App() {
       checkAdminAccess()
     }
 
-    // Первая проверка
     initTG()
-
-    // Запасные проверки с задержкой (для iOS/медленной загрузки Telegram SDK)
-    const timer1 = setTimeout(checkAdminAccess, 300)
-    const timer2 = setTimeout(checkAdminAccess, 1000)
-
     fetchProducts()
-
-    return () => {
-      clearTimeout(timer1)
-      clearTimeout(timer2)
-    }
   }, [])
 
   const checkAdminAccess = () => {
     const tg = window.Telegram?.WebApp
     const user = tg?.initDataUnsafe?.user
 
-    // Фиксируем информацию для визуального дебага
-    if (user) {
-      setDebugInfo(`Юзер: @${user.username || 'БЕЗ_ЮЗЕРНЕЙМА'} (ID: ${user.id})`)
-    } else {
-      setDebugInfo('TG User = UNDEFINED (Контекст Telegram не получен)')
-    }
-
-    // Проверка юзернейма
     if (user?.username) {
       const currentUsername = user.username.toLowerCase()
       const hasAccess = ADMIN_USERNAMES.map(u => u.toLowerCase()).includes(currentUsername)
@@ -119,11 +99,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#1F262E] text-slate-100 pb-10">
-      {/* ВРЕМЕННАЯ ПЛАШКА ОТЛАДКИ */}
-      <div className="bg-amber-500/20 border-b border-amber-500/40 text-amber-200 text-xs px-4 py-2 text-center font-mono">
-        {debugInfo} | <span className="font-bold">Admin: {isAdmin ? 'ДА' : 'НЕТ'}</span>
-      </div>
-
       {/* Шапка */}
       <header className="bg-[#1F262E]/90 backdrop-blur-md border-b border-[#455A78]/40 sticky top-0 z-10 px-4 py-3.5 flex items-center justify-between shadow-md">
         <div className="flex items-center gap-2.5">
