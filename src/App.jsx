@@ -5,29 +5,31 @@ import AdminModal from './AdminModal'
 import EditModal from './EditModal'
 import ProductDetailModal from './ProductDetailModal'
 
-
 const ADMIN_USERNAMES = [
-  'lampa_damba', // Впиши юзернейм своего нового аккаунта (без @)
-  'kot_334618'       // Впиши юзернейм второго админа
+  'lampa_damba',
+  'kot_334618'
 ]
 
 export default function App() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
-  
+  const [debugInfo, setDebugInfo] = useState('Загрузка...')
+
   // Модальные окна
   const [isAdminOpen, setIsAdminOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [editingProduct, setEditingProduct] = useState(null)
 
   useEffect(() => {
+    // 1. Инициализируем Telegram WebApp
     const tg = window.Telegram?.WebApp
     if (tg) {
-      tg.ready() 
-      tg.expand() 
+      tg.ready()
+      tg.expand()
     }
 
+    // 2. Проверяем права админа и загружаем товары
     checkAdminAccess()
     fetchProducts()
   }, [])
@@ -36,17 +38,19 @@ export default function App() {
     const tg = window.Telegram?.WebApp
     const user = tg?.initDataUnsafe?.user
 
-    // Для отладки: посмотри в консоли браузера/дебаггера, что пришло
-    console.log(' Telegram User object:', user)
+    // Фиксируем информацию для визуального дебага прямо в интерфейсе
+    if (user) {
+      setDebugInfo(`Юзер: @${user.username || 'БЕЗ_ЮЗЕРНЕЙМА'} (ID: ${user.id})`)
+    } else {
+      setDebugInfo('TG User = UNDEFINED (Контекст Telegram не получен)')
+    }
 
+    // Проверка юзернейма
     if (user?.username) {
       const currentUsername = user.username.toLowerCase()
-      const isUserAdmin = ADMIN_USERNAMES.map(u => u.toLowerCase()).includes(currentUsername)
-      
-      console.log(`Пользователь @${user.username} admin:`, isUserAdmin)
-      setIsAdmin(isUserAdmin)
+      const hasAccess = ADMIN_USERNAMES.map(u => u.toLowerCase()).includes(currentUsername)
+      setIsAdmin(hasAccess)
     } else {
-      console.warn('⚠️ Юзернейм не найден или приложение открыто не через Telegram!')
       setIsAdmin(false)
     }
   }
@@ -103,6 +107,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#1F262E] text-slate-100 pb-10">
+      {/* ВРЕМЕННАЯ ПЛАШКА ОТЛАДКИ ДЛЯ ПРОВЕРКИ DЕBUGA */}
+      <div className="bg-amber-500/20 border-b border-amber-500/40 text-amber-200 text-xs px-4 py-2 text-center font-mono">
+        {debugInfo} | <span className="font-bold">Admin: {isAdmin ? 'ДА' : 'НЕТ'}</span>
+      </div>
+
       {/* Шапка */}
       <header className="bg-[#1F262E]/90 backdrop-blur-md border-b border-[#455A78]/40 sticky top-0 z-10 px-4 py-3.5 flex items-center justify-between shadow-md">
         <div className="flex items-center gap-2.5">
@@ -186,7 +195,7 @@ export default function App() {
                   )}
                 </div>
 
-                {/* Информация без кнопки Купить */}
+                {/* Информация */}
                 <div className="p-3 flex flex-col flex-1 justify-between gap-2">
                   <div>
                     <h3 className="font-semibold text-sm text-white line-clamp-1">{item.title}</h3>
