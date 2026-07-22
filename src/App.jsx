@@ -22,6 +22,12 @@ export default function App() {
   const [editingProduct, setEditingProduct] = useState(null)
 
   useEffect(() => {
+    const tg = window.Telegram?.WebApp
+    if (tg) {
+      tg.ready() 
+      tg.expand() 
+    }
+
     checkAdminAccess()
     fetchProducts()
   }, [])
@@ -29,11 +35,18 @@ export default function App() {
   const checkAdminAccess = () => {
     const tg = window.Telegram?.WebApp
     const user = tg?.initDataUnsafe?.user
-  
-    // Переводим username в нижний регистр для защиты от случайных заглавных букв
-    if (user?.username && ADMIN_USERNAMES.map(u => u.toLowerCase()).includes(user.username.toLowerCase())) {
-      setIsAdmin(true)
+
+    // Для отладки: посмотри в консоли браузера/дебаггера, что пришло
+    console.log(' Telegram User object:', user)
+
+    if (user?.username) {
+      const currentUsername = user.username.toLowerCase()
+      const isUserAdmin = ADMIN_USERNAMES.map(u => u.toLowerCase()).includes(currentUsername)
+      
+      console.log(`Пользователь @${user.username} admin:`, isUserAdmin)
+      setIsAdmin(isUserAdmin)
     } else {
+      console.warn('⚠️ Юзернейм не найден или приложение открыто не через Telegram!')
       setIsAdmin(false)
     }
   }
