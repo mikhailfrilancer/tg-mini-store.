@@ -8,7 +8,7 @@ import ProductDetailModal from './ProductDetailModal'
 
 const ADMIN_USERNAMES = [
   'lampa_damba', // Впиши юзернейм своего нового аккаунта (без @)
-  '@kot_334618'       // Впиши юзернейм второго админа
+  'kot_334618'       // Впиши юзернейм второго админа
 ]
 
 export default function App() {
