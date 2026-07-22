@@ -6,9 +6,9 @@ import EditModal from './EditModal'
 import ProductDetailModal from './ProductDetailModal'
 
 
-const ADMIN_TELEGRAM_IDS = [
-  1302024636, // Твой ID
-  1083614120 // ID второго админа
+const ADMIN_USERNAMES = [
+  'lampa_damba', // Впиши юзернейм своего нового аккаунта (без @)
+  '@kot_334618'       // Впиши юзернейм второго админа
 ]
 
 export default function App() {
@@ -26,19 +26,16 @@ export default function App() {
     fetchProducts()
   }, [])
 
-  // Логика проверки прав администратора
   const checkAdminAccess = () => {
-    /* =========================================================
-      🚀 РЕЖИМ ПРОДАКШН (РАЗКОММЕНТИРУЙ ПРИ ВЫХОДЕ В ПРОД)
-      ========================================================= */
-
-      const tg = window.Telegram?.WebApp
-      const user = tg?.initDataUnsafe?.user
-      if (user && ADMIN_TELEGRAM_IDS.includes(Number(user.id))) {
-        setIsAdmin(true)
-      } else {
-        setIsAdmin(false)
-      }
+    const tg = window.Telegram?.WebApp
+    const user = tg?.initDataUnsafe?.user
+  
+    // Переводим username в нижний регистр для защиты от случайных заглавных букв
+    if (user?.username && ADMIN_USERNAMES.map(u => u.toLowerCase()).includes(user.username.toLowerCase())) {
+      setIsAdmin(true)
+    } else {
+      setIsAdmin(false)
+    }
   }
 
   async function fetchProducts() {
