@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { X, ChevronLeft, ChevronRight, Send, MessageCircle } from 'lucide-react'
 
 // Укажи здесь юзернейм продавца (без символа @)
-const SELLER_TELEGRAM_USERNAME = 'mihail_fl' 
+const SELLER_TELEGRAM_USERNAME = 'minskiu1' 
 
 export default function ProductDetailModal({ isOpen, onClose, product }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
