@@ -192,7 +192,7 @@ export default function App() {
                   </div>
                   <div className="pt-2 border-t border-[#455A78]/30">
                     <span className="font-bold text-[#EAB87C] text-base leading-none block">
-                      {Number(item.price).toLocaleString('ru-RU')} ₽
+                      {Number(item.price).toLocaleString('ru-RU')} BYN
                     </span>
                   </div>
                 </div>
